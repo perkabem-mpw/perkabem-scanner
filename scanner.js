@@ -18,17 +18,23 @@ async function startScanner(){
 
             (result, error) => {
 
-                if(result){
+    if (error) {
+        return;
+    }
 
-                    console.log(result.text);
+    console.log("CALLBACK");
 
-        alert("QR : " + result.text);
+    if(result){
+
+        console.log("HASIL =", result.text);
+
+        alert("QR = " + result.text);
 
         codeReader.stop();
-                    
-                }
 
-            }
+    }
+
+}
 
         );
 
