@@ -1,60 +1,46 @@
 let codeReader;
-let scanned = false;
 
-async function startScanner() {
+async function startScanner(){
 
     codeReader = new ZXingBrowser.BrowserQRCodeReader();
 
-    try {
+    try{
 
         await codeReader.decodeFromConstraints(
 
             {
-                video: {
-                    facingMode: "environment"
+                video:{
+                    facingMode:"environment"
                 }
+
             },
 
             "video",
 
-            (result, error) => {
+            (result,error)=>{
 
-                if (error) return;
+                if(result){
 
-                if (!result) return;
+                    console.log(result.text);
 
-                // supaya hanya jalan sekali
-                if (scanned) return;
+                    alert("QR : "+result.text);
 
-                scanned = true;
+                    codeReader.stop();
 
-                const memberId = result.text.trim();
-
-                console.log("QR =", memberId);
-
-                // hentikan scanner
-                codeReader.stop();
-
-                // beri jeda sedikit
-                setTimeout(() => {
-
-                    location.href =
-                        "https://script.google.com/macros/s/AKfycbzk78w5BqDWSPOmCsNJe_QfMwVvqhsFD0HLe4ypCb0zt3SEDbF-RvvZyw1tkrLDWWXolQ/exec?page=scanResult&memberId="
-                        + encodeURIComponent(memberId);
-
-                }, 300);
+                }
 
             }
 
         );
 
-    } catch (err) {
+    }catch(err){
 
         console.error(err);
+
         alert(err);
 
     }
 
 }
 
-window.onload = startScanner;
+window.onload=startScanner;
