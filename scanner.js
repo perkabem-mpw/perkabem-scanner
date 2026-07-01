@@ -1,6 +1,7 @@
 let codeReader;
 let scanning = false;
 
+
 const API_URL =
 "https://script.google.com/macros/s/AKfycbzk78w5BqDWSPOmCsNJe_QfMwVvqhsFD0HLe4ypCb0zt3SEDbF-RvvZyw1tkrLDWWXolQ/exec";
 
