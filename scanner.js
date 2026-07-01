@@ -18,23 +18,24 @@ async function startScanner(){
 
             (result, error) => {
 
+    console.log("CALLBACK");
+
     if (error) {
+        console.log(error);
         return;
     }
 
-    console.log("CALLBACK");
+    if (!result) return;
 
-    if(result){
+    console.log("RESULT =", result.text);
 
-        console.log("HASIL =", result.text);
+    // Jangan stop scanner dulu
+    // Jangan redirect dulu
 
-        alert("QR = " + result.text);
-
-        codeReader.stop();
-
-    }
+    alert(result.text);
 
 }
+
 
         );
 
