@@ -23,9 +23,12 @@ async function startScanner(){
 
                     console.log(result.text);
 
-                    alert("QR : " + result.text);
-
                     codeReader.stop();
+
+                    window.location.replace(
+                    "https://script.google.com/macros/s/AKfycbzk78w5BqDWSPOmCsNJe_QfMwVvqhsFD0HLe4ypCb0zt3SEDbF-RvvZyw1tkrLDWWXolQ/exec?page=scanResult&memberId="
+                    + encodeURIComponent(result.text)
+                            );
 
                 }
 
