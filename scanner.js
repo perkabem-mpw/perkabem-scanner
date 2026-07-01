@@ -1,114 +1,222 @@
 let codeReader;
 let scanning = false;
 
-const API_URL = "https://script.google.com/macros/s/AKfycbzk78w5BqDWSPOmCsNJe_QfMwVvqhsFD0HLe4ypCb0zt3SEDbF-RvvZyw1tkrLDWWXolQ/exec";
+const API_URL =
+"https://script.google.com/macros/s/AKfycbzk78w5BqDWSPOmCsNJe_QfMwVvqhsFD0HLe4ypCb0zt3SEDbF-RvvZyw1tkrLDWWXolQ/exec";
 
-// Tambahkan fungsi untuk menyiapkan container agar tidak menumpuk
-function getContainer() {
-    let container = document.getElementById("scanner-result-container");
-    if (!container) {
-        container = document.createElement("div");
-        container.id = "scanner-result-container";
-        document.body.appendChild(container);
-    }
-    return container;
-}
+async function startScanner(){
 
-async function startScanner() {
-    // Reset status scanning & bersihkan tampilan lama
-    scanning = false;
-    getContainer().innerHTML = ""; 
-    
-    if (!codeReader) {
-        codeReader = new ZXingBrowser.BrowserQRCodeReader();
-    }
+    codeReader = new ZXingBrowser.BrowserQRCodeReader();
 
-    try {
+    try{
+
         await codeReader.decodeFromConstraints(
-            { video: { facingMode: "environment" } },
+
+            {
+                video:{
+                    facingMode:"environment"
+                }
+            },
+
             "video",
+
             onScan
+
         );
-    } catch (err) {
+
+    }catch(err){
+
         console.error(err);
-        alert("Gagal membuka kamera: " + err);
+        alert(err);
+
     }
+
 }
 
-async function onScan(result, error) {
-    if (error) return;
-    if (!result || scanning) return;
+async function onScan(result,error){
+
+    if(error) return;
+
+    if(!result) return;
+
+    if(scanning) return;
 
     scanning = true;
+
     const memberId = result.text.trim();
-    console.log("SCAN :", memberId);
 
-    // Hentikan kamera sementara proses API berjalan
-    if (codeReader) codeReader.stop();
+    console.log("SCAN :",memberId);
 
-    try {
-        const res = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "preview", memberId: memberId })
+    codeReader.stop();
+
+    try{
+
+        const res = await fetch(API_URL,{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+
+                action:"preview",
+
+                memberId:memberId
+
+            })
+
         });
 
         const data = await res.json();
+
         console.log(data);
+
         showGuest(data);
-    } catch (err) {
-        alert("Gagal mengambil data: " + err);
-        // Jika gagal, otomatis scan ulang tanpa reload halaman
-        startScanner();
+
     }
+
+    catch(err){
+
+        alert(err);
+
+        scanning=false;
+
+        startScanner();
+
+    }
+
 }
 
-function showGuest(data) {
-    const container = getContainer();
-    let html = "";
+function showGuest(data){
 
-    if (data.status === "NOT_FOUND") {
-        html = `
-        <h2 style="color:red">Member Tidak Ditemukan</h2>
-        <button onclick="startScanner()">Scan Lagi</button>
+    let html="";
+
+    if(data.status=="NOT_FOUND"){
+
+        html=`
+
+        <h2 style="color:red">
+
+        Member Tidak Ditemukan
+
+        </h2>
+
+        <button onclick="restartScanner()">
+
+        Scan Lagi
+
+        </button>
+
         `;
-    } else {
-        html = `
-        <div style="background:#fff; border-radius:15px; padding:20px; margin-top:20px; border:1px solid #ddd; max-width:420px;">
-            <h2>${data.nama}</h2>
-            <p><b>Member</b> : ${data.memberId}</p>
-            <p><b>Pax</b> : ${data.pax}</p>
-            <p><b>Table</b> : ${data.tableNo}</p>
-            <p><b>Seat</b> : ${data.seatFrom}-${data.seatTo}</p>
-            <br>
-            <button onclick="checkIn('${data.memberId.replace(/'/g, "\\'")}')" style="padding:12px 30px; font-size:18px;">
-                ✅ CHECK-IN
-            </button>
+
+    }
+
+    else{
+
+        html=`
+
+        <div style="
+
+        background:#fff;
+
+        border-radius:15px;
+
+        padding:20px;
+
+        margin-top:20px;
+
+        border:1px solid #ddd;
+
+        max-width:420px;
+
+        ">
+
+        <h2>${data.nama}</h2>
+
+        <p><b>Member</b> : ${data.memberId}</p>
+
+        <p><b>Pax</b> : ${data.pax}</p>
+
+        <p><b>Table</b> : ${data.tableNo}</p>
+
+        <p><b>Seat</b> : ${data.seatFrom}-${data.seatTo}</p>
+
+        <br>
+
+        <button
+
+        onclick="checkIn('${data.memberId}')"
+
+        style="
+
+        padding:12px 30px;
+
+        font-size:18px;
+
+        ">
+
+        ✅ CHECK-IN
+
+        </button>
+
         </div>
+
         `;
+
     }
 
-    // Mengganti isi container, bukan menambahkannya di bawah (mencegah penumpukan)
-    container.innerHTML = html;
+    document.body.insertAdjacentHTML(
+
+        "beforeend",
+
+        html
+
+    );
+
 }
 
-async function checkIn(memberId) {
-    try {
-        const res = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "checkin", memberId: memberId })
-        });
+async function checkIn(memberId){
 
-        const data = await res.json();
-        alert("CHECK-IN BERHASIL\n\n" + data.nama);
-        
-        // Opsional: Jika alur registrasinya massal, lebih baik kembali scan langsung daripada reload total
-        startScanner(); 
-    } catch (err) {
-        alert("Gagal Check-in: " + err);
-        startScanner();
-    }
+    const res = await fetch(API_URL,{
+
+        method:"POST",
+
+        headers:{
+
+            "Content-Type":"application/json"
+
+        },
+
+        body:JSON.stringify({
+
+            action:"checkin",
+
+            memberId:memberId
+
+        })
+
+    });
+
+    const data = await res.json();
+
+    alert(
+
+        "CHECK-IN BERHASIL\n\n"+
+
+        data.nama
+
+    );
+
+    restartScanner();
+
 }
 
-window.onload = startScanner;
+function restartScanner(){
+
+    location.reload();
+
+}
+
+window.onload=startScanner;
