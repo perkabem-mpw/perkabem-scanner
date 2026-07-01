@@ -18,24 +18,21 @@ async function startScanner(){
 
             (result, error) => {
 
-    console.log("CALLBACK");
+                if(result){
 
-    if (error) {
-        console.log(error);
-        return;
-    }
+                    console.log(result.text);
 
-    if (!result) return;
+                    codeReader.stop();
 
-    console.log("RESULT =", result.text);
+                    alert("Redirecting...");
 
-    // Jangan stop scanner dulu
-    // Jangan redirect dulu
+                    window.location.href =
+                    "https://script.google.com/macros/s/AKfycbzk78w5BqDWSPOmCsNJe_QfMwVvqhsFD0HLe4ypCb0zt3SEDbF-RvvZyw1tkrLDWWXolQ/exec?page=scanResult&memberId="
+                    + encodeURIComponent(result.text);
 
-    alert(result.text);
+                }
 
-}
-
+            }
 
         );
 
