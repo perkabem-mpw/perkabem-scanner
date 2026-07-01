@@ -1,16 +1,17 @@
 let codeReader;
+let scanned = false;
 
-async function startScanner(){
+async function startScanner() {
 
     codeReader = new ZXingBrowser.BrowserQRCodeReader();
 
-    try{
+    try {
 
         await codeReader.decodeFromConstraints(
 
             {
-                video:{
-                    facingMode:"environment"
+                video: {
+                    facingMode: "environment"
                 }
             },
 
@@ -18,23 +19,18 @@ async function startScanner(){
 
             (result, error) => {
 
-    console.log("CALLBACK");
+                if (error) return;
 
-    if (error) {
-        console.log(error);
-        return;
-    }
+                if (!result) return;
 
-    if (!result) return;
+                // supaya hanya jalan sekali
+                if (scanned) return;
 
-    console.log("RESULT =", result.text);
+                scanned = true;
 
-    // Jangan stop scanner dulu
-    // Jangan redirect dulu
+                const memberId = result.text.trim();
 
-   const memberId = result.text.trim();
-
-     console.log("QR =", memberId);
+                console.log("QR =", memberId);
 
                 // hentikan scanner
                 codeReader.stop();
@@ -48,16 +44,13 @@ async function startScanner(){
 
                 }, 300);
 
-
             }
-
 
         );
 
-    }catch(err){
+    } catch (err) {
 
         console.error(err);
-
         alert(err);
 
     }
