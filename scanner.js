@@ -32,7 +32,17 @@ async function startScanner(){
     // Jangan stop scanner dulu
     // Jangan redirect dulu
 
-    alert(result.text);
+   const memberId = result.text.trim();
+
+codeReader.stop();
+
+setTimeout(() => {
+
+    window.location.href =
+    "https://script.google.com/macros/s/AKfycbzk78w5BqDWSPOmCsNJe_QfMwVvqhsFD0HLe4ypCb0zt3SEDbF-RvvZyw1tkrLDWWXolQ/exec?page=scanResult&memberId="
+    + encodeURIComponent(memberId);
+
+}, 300);
 
 }
 
