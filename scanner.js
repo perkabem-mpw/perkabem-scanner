@@ -34,7 +34,7 @@ async function startScanner(){
 
    const memberId = result.text.trim();
 
-codeReader.stop();
+
 
 setTimeout(() => {
 
@@ -43,7 +43,7 @@ setTimeout(() => {
     + encodeURIComponent(memberId);
 
 }, 300);
-
+codeReader.stop();
 }
 
 
