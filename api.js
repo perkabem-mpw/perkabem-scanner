@@ -3,28 +3,27 @@ const API_URL =
 
 async function previewMember(memberId){
 
-    const res = await fetch(
+    try{
 
-        API_URL +
-        "&action=preview&memberId=" +
-        encodeURIComponent(memberId)
+        const res = await fetch(
 
-    );
+            API_URL +
+            "&action=preview" +
+            "&memberId=" +
+            encodeURIComponent(memberId)
 
-    return await res.json();
+        );
 
-}
+        const data = await res.json();
 
-async function checkInMember(memberId){
+        showGuest(data);
 
-    const res = await fetch(
+    }catch(err){
 
-        API_URL +
-        "&action=checkin&memberId=" +
-        encodeURIComponent(memberId)
+        console.error(err);
 
-    );
+        alert(err);
 
-    return await res.json();
+    }
 
 }
