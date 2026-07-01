@@ -22,14 +22,10 @@ async function startScanner(){
 
                     console.log(result.text);
 
-                    codeReader.stop();
+        alert("QR : " + result.text);
 
-                    alert("Redirecting...");
-
-                    window.location.href =
-                    "https://script.google.com/macros/s/AKfycbzk78w5BqDWSPOmCsNJe_QfMwVvqhsFD0HLe4ypCb0zt3SEDbF-RvvZyw1tkrLDWWXolQ/exec?page=scanResult&memberId="
-                    + encodeURIComponent(result.text);
-
+        codeReader.stop();
+                    
                 }
 
             }
